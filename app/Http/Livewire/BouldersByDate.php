@@ -37,6 +37,9 @@ class BouldersByDate extends Component
 
     public function updated()
     {
+        if (!$this->userId || !$this->gymId) {
+            return;
+        }
         $this->climbs = $this->getClimbs();
         $this->ascends = $this->getAscends();
 
@@ -59,14 +62,14 @@ class BouldersByDate extends Component
 
     public function getClimbs(): Collection
     {
-        $response = Http::get('https://api.toplogger.nu/v1/gyms/' . $this->gymId . '/climbs.json');
+        $response = Http::get('https://api.toplogger.nu/v1/gyms/' . $this->gymId . '/climbs.json?json_params={"filters":{"deleted":false,"live":true}}');
 
         return collect(json_decode($response->body()));
     }
 
     public function getAscends(): Collection
     {
-        $response = Http::get('https://api.toplogger.nu/v1/ascends.json?json_params={"filters":{"used":true,"user":{"uid":"' . $this->userId . '"},"climb":{"gym_id":' . $this->gymId . '}}}&serialize_checks=true');
+        $response = Http::get('https://api.toplogger.nu/v1/ascends.json?json_params={"filters":{"used":true,"user":{"uid":"' . $this->userId . '"},"climb":{"gym_id":' . $this->gymId . ',"deleted":false,"live":true}}}&serialize_checks=true');
 
         return collect(json_decode($response->body()));
     }
