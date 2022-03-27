@@ -10,8 +10,8 @@
 
     <x-button wire:click="$set('gymId', 8)" class="{{ $gymId == 8 ? 'font-bold' : '' }}">Bruut</x-button>
     <x-button wire:click="$set('gymId', 3)" class="{{ $gymId == 3 ? 'font-bold' : '' }}">Monk</x-button>
-    <x-button wire:click="$set('gymId', 3)" class="{{ $gymId == 123 ? 'font-bold' : '' }}">Neoliet</x-button>
-    <x-button wire:click="$set('gymId', 3)" class="{{ $gymId == 131 ? 'font-bold' : '' }}">MN Dordt</x-button>
+    <x-button wire:click="$set('gymId', 123)" class="{{ $gymId == 123 ? 'font-bold' : '' }}">Neoliet</x-button>
+    <x-button wire:click="$set('gymId', 131)" class="{{ $gymId == 131 ? 'font-bold' : '' }}">MN Dordt</x-button>
 
     @foreach($ascendsByDate as $date => $ascends)
         <h3 class="text-lg mt-2">{{ $date }}</h3>
