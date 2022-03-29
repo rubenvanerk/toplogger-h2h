@@ -5,11 +5,10 @@ namespace App\Http\Livewire;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Livewire\Component;
-use Illuminate\Support\Facades\Http;
+use RubenVanErk\TopLoggerPhpSdk\TopLogger;
 
 class BouldersByDate extends Component
 {
-    public string $date;
     public Collection $climbs;
     public Collection $ascends;
     public Collection $ascendsByDate;
@@ -40,13 +39,10 @@ class BouldersByDate extends Component
         if (!$this->userId || !$this->gymId) {
             return;
         }
-        $this->climbs = $this->getClimbs();
         $this->ascends = $this->getAscends();
 
         $groupedAscends = $this->ascends;
         $groupedAscends = $groupedAscends->map(function ($ascend) {
-            $ascend->climb = $this->climbs->firstWhere(fn($climb) => $climb->id == $ascend->climb_id);
-
             $grade = (float)$ascend->climb->grade;
             $mainGrade = (string)floor($grade);
             $subGrade = $this->subgrades[floor(fmod($grade, 1) / 0.16)];
@@ -60,17 +56,16 @@ class BouldersByDate extends Component
         $this->ascendsByDate = $groupedAscends;
     }
 
-    public function getClimbs(): Collection
-    {
-        $response = Http::get('https://api.toplogger.nu/v1/gyms/' . $this->gymId . '/climbs.json?json_params={"filters":{"deleted":false,"live":true}}');
-
-        return collect(json_decode($response->body()));
-    }
-
     public function getAscends(): Collection
     {
-        $response = Http::get('https://api.toplogger.nu/v1/ascends.json?json_params={"filters":{"used":true,"user":{"uid":"' . $this->userId . '"},"climb":{"gym_id":' . $this->gymId . ',"deleted":false,"live":true}}}&serialize_checks=true');
-
-        return collect(json_decode($response->body()));
+        return collect(
+            (new TopLogger())->ascends()
+                ->filter(['used' => true])
+                ->filter(['user' => ['uid' => $this->userId]])
+                ->filter(['climb' => ['gym_id' => $this->gymId]])
+                ->param(['serialize_checks' => true])
+                ->include(['climb' => ['hold']])
+                ->get()
+        );
     }
 }
