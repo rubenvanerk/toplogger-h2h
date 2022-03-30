@@ -1,10 +1,14 @@
-<div class="w-screen px-2">
-    <div wire:loading class="text-gray-800 mb-3 animate-pulse">Data aan het verversen...</div>
+<div class="w-screen max-w-xl mx-auto">
 
-    <div class="flex flex-col space-y-10">
+    <div wire:loading.class.remove="hidden" class="hidden transition-transform">
+        <div class="text-gray-800 mb-3 animate-pulse w-100 text-center">Data aan het verversen...</div>
+    </div>
+
+    <x-stats :climberStats="$climberStats"/>
+
+    <div class="flex flex-col space-y-10 px-3">
         @foreach($ascendsByDate as $date => $ascendsByUser)
             <div>
-
                 <div class="border-b border-gray-200 pb-1 mb-2">
                     @php
                         $date = \Carbon\Carbon::createFromFormat('Y-m-d', $date)->locale('nl');

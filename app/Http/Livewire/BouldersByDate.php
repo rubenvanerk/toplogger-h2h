@@ -34,26 +34,17 @@ class BouldersByDate extends Component
         '106235' => 'Wouter',
     ];
 
+    public array $climberStats = [];
+
     public function mount(): void
     {
         $this->createDataset();
+        $this->createStats();
     }
 
     public function render(): View
     {
         return view('livewire.boulders-by-date');
-    }
-
-    public function getAscends($userId): Collection
-    {
-        return collect(
-            (new TopLogger())->ascends()
-                ->filter(['used' => true])
-                ->filter(['user' => ['uid' => $userId]])
-                ->param(['serialize_checks' => true])
-                ->include(['climb'])
-                ->get()
-        );
     }
 
     public function refreshData(): void
@@ -67,12 +58,7 @@ class BouldersByDate extends Component
         $this->ascendsByDate = collect();
 
         foreach ($this->climberUids as $uid => $climber) {
-            $this->ascendsByDate = $this->ascendsByDate->merge(
-                Cache::rememberForever(
-                    'ascends' . $uid,
-                    fn() => $this->getAscends($uid)
-                )
-            );
+            $this->ascendsByDate = $this->ascendsByDate->merge($this->getAscends($uid));
         }
 
         // set grade to font & sort by grade
@@ -103,11 +89,61 @@ class BouldersByDate extends Component
         });
     }
 
+    protected function createStats(): void
+    {
+        foreach ($this->climberUids as $uid => $climber) {
+            $ascends = collect($this->getAscends($uid));
+
+            $tops = $ascends->count();
+            $sessionCount = $ascends
+                ->groupBy(fn($ascend) => (new Carbon($ascend->date_logged))->format('Y-m-d'))
+                ->count();
+
+            $averageScore = $ascends->where(fn($ascend) => (new Carbon($ascend->date_logged))->greaterThan(now()->subDays(60)))
+                ->sortByDesc(fn($ascend) => (float)$ascend->climb->grade)
+                ->take(10)
+                ->map(function ($ascend) {
+                    $score = (float)$ascend->climb->grade * 100;
+                    if ($ascend->checks == 2) {
+                        $score += 16.66;
+                    }
+                    return $score;
+                })->average();
+
+            $mainGrade = (int)floor($averageScore / 100);
+            $subGradeScore = $averageScore - ($mainGrade * 100);
+            $subGrade = $this->subgrades[(int)floor($subGradeScore / 16.66)];
+            $progress = (int)round(fmod($subGradeScore, 16.66) / 16.66 * 100);
+
+            $this->climberStats[$uid] = [
+                'sessionCount' => $sessionCount,
+                'tops' => $tops,
+                'grade' => $mainGrade . $subGrade,
+                'grade_progress' => $progress,
+            ];
+        }
+    }
+
     protected function getGym($gymId)
     {
         return Cache::rememberForever(
             'gyms' . $gymId,
             fn() => (new TopLogger())->gyms()->include(['holds', 'walls'])->find($gymId)
+        );
+    }
+
+    public function getAscends($userId): Collection
+    {
+        return Cache::rememberForever(
+            'ascends' . $userId,
+            fn() => collect(
+                (new TopLogger())->ascends()
+                    ->filter(['used' => true])
+                    ->filter(['user' => ['uid' => $userId]])
+                    ->param(['serialize_checks' => true])
+                    ->include(['climb'])
+                    ->get()
+            )
         );
     }
 }

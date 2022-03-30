@@ -5,6 +5,19 @@
 
     RewriteEngine On
 
+    RewriteCond %{REMOTE_ADDR} !127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
+    RewriteCond %{REMOTE_ADDR} !::1
+    RewriteCond %{ENV:HTTPS} off
+    RewriteRule (.*) https://%{SERVER_NAME}/$1 [R,L]
+
+    ##
+    ## Redirect to non-www
+    ##
+    RewriteCond %{REMOTE_ADDR} !127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
+    RewriteCond %{REMOTE_ADDR} !::1
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
