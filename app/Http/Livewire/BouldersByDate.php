@@ -86,6 +86,7 @@ class BouldersByDate extends Component
 
                 $ascend->climb->grade = $mainGrade . $subGrade;
                 $ascend->climb->gym_name = $this->getGym($ascend->climb->gym_id)->name;
+                $ascend->climb->gym_city = $this->getGym($ascend->climb->gym_id)->city;
                 $ascend->climb->wall_name = collect($this->getGym($ascend->climb->gym_id)->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
                 $ascend->climb->hold_color = collect($this->getGym($ascend->climb->gym_id)->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
 

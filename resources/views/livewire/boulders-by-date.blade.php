@@ -10,7 +10,7 @@
                         $date = \Carbon\Carbon::createFromFormat('Y-m-d', $date)->locale('nl');
                     @endphp
                     <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">{{ ucfirst($date->isoFormat('dddd')) }} {{ $date->isoFormat('LL') }}</h2>
-                    <h4 class="text-sm text-gray-600">{{ $ascendsByUser->first()->first()->climb->gym_name }}</h4>
+                    <h4 class="text-gray-700">{{ $ascendsByUser->first()->first()->climb->gym_name }}, {{ $ascendsByUser->first()->first()->climb->gym_city }}</h4>
                 </div>
 
                 <div class="flex space-x-2 justify-around sm:justify-items-start">
