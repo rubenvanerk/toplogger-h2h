@@ -7,8 +7,13 @@
                 <div class="flex justify-between h-16">
                     <div class="flex">
                         <div class="flex-shrink-0 flex items-center">
-                            <h1>TopLogger+</h1>
+                            <h1>{{ config('app.name') }}</h1>
                         </div>
+                    </div>
+                    <div class="my-auto" x-data>
+                        <x-button x-on:click="window.livewire.emit('clearCache')">
+                            Ververs data
+                        </x-button>
                     </div>
                 </div>
             </div>

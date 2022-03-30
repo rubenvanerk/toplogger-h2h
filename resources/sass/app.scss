@@ -53,3 +53,11 @@
 [x-cloak] {
     display: none;
 }
+
+@layer utilities {
+    @variants responsive {
+        .text-shadow {
+            text-shadow: 0 0 5px dimgray;
+        }
+    }
+}

@@ -13,6 +13,8 @@ class BouldersByDate extends Component
 {
     public Collection $ascendsByDate;
 
+    protected $listeners = ['clearCache' => 'refreshData'];
+
     public array $subgrades = [
         0 => 'a',
         1 => 'a+',
@@ -20,13 +22,6 @@ class BouldersByDate extends Component
         3 => 'b+',
         4 => 'c',
         5 => 'c+',
-    ];
-
-    public array $gyms = [
-        3 => 'Monk Rotterdam',
-        8 => 'Bruut',
-        123 => 'Bolder Neoliet',
-        131 => 'Mountain Network Dordrecht',
     ];
 
     public array $climberUids = [
@@ -61,7 +56,7 @@ class BouldersByDate extends Component
         );
     }
 
-    public function refresh(): void
+    public function refreshData(): void
     {
         Cache::clear();
         $this->createDataset();
@@ -90,7 +85,9 @@ class BouldersByDate extends Component
                 $subGrade = $this->subgrades[floor(($grade - $mainGrade) / 0.16)] ?? '?';
 
                 $ascend->climb->grade = $mainGrade . $subGrade;
-                $ascend->climb->gym_name = $this->gyms[$ascend->climb->gym_id] ?? 'Nieuw!';
+                $ascend->climb->gym_name = $this->getGym($ascend->climb->gym_id)->name;
+                $ascend->climb->wall_name = collect($this->getGym($ascend->climb->gym_id)->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
+                $ascend->climb->hold_color = collect($this->getGym($ascend->climb->gym_id)->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
 
                 return $ascend;
             });
@@ -103,5 +100,13 @@ class BouldersByDate extends Component
         $this->ascendsByDate = $this->ascendsByDate->map(function (Collection $groupedAscends) {
             return $groupedAscends->groupBy('user_id');
         });
+    }
+
+    protected function getGym($gymId)
+    {
+        return Cache::rememberForever(
+            'gyms' . $gymId,
+            fn() => (new TopLogger())->gyms()->include(['holds', 'walls'])->find($gymId)
+        );
     }
 }
