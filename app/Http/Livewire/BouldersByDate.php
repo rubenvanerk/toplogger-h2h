@@ -78,20 +78,26 @@ class BouldersByDate extends Component
 
     protected function createStats(): void
     {
-        foreach ($this->climberIds as $id => $climber) {
+        foreach ($this->climberIds as $userId => $climber) {
             $ascends = collect($this->getAscends(array_flip($this->climberUids)[$climber]));
 
             $sessionCount = $ascends
                 ->groupBy(fn($ascend) => (new Carbon($ascend->date_logged))->format('Y-m-d'))
                 ->count();
 
-            $stats = $this->getStats($id);
-            $stats->top_ten = collect($stats->top_ten)->map(function ($ascend) {
+            $stats = $this->getStats($userId);
+            $stats->top_ten = collect($stats->top_ten)->map(function ($ascend) use ($ascends) {
                 $ascend->grade_font = GradeConverter::toFont((float)$ascend->grade);
+
+                $ascend->gym_id = $ascends->firstWhere('climb_id', $ascend->climb_id)->climb->gym_id;
+                $ascend->gym_name = $this->getGym($ascend->gym_id)?->name;
+
+                $ascend->days_ago = (new Carbon($ascend->date_logged))->diffInDays(now());
+
                 return get_object_vars($ascend);
             });
 
-            $this->climberStats[$id] = [
+            $this->climberStats[$userId] = [
                 'sessionCount' => $sessionCount,
                 'tops' => $ascends->count(),
                 'grade_font' => GradeConverter::toFont((float)$stats->grade),

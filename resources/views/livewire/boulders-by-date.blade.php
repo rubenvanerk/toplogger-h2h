@@ -1,7 +1,7 @@
-<div class="w-screen max-w-xl mx-auto">
+<div class="w-screen max-w-xl mx-auto" wire:loading.class="animate-pulse">
 
-    <div wire:loading.class.remove="hidden" class="hidden transition-transform">
-        <div class="text-gray-800 mb-3 animate-pulse w-100 text-center">Data aan het verversen...</div>
+    <div wire:loading.class.remove="hidden" class="hidden">
+        <div class="text-gray-800 mb-3 w-100 text-center">Data aan het verversen...</div>
     </div>
 
     <x-stats :climberStats="$climberStats"/>
