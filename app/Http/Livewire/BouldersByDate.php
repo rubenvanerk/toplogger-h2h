@@ -88,8 +88,8 @@ class BouldersByDate extends Component
             $stats = $this->getStats($id);
             $stats->top_ten = collect($stats->top_ten)->map(function ($ascend) {
                 $ascend->grade_font = GradeConverter::toFont((float)$ascend->grade);
-                return $ascend;
-            })->sortByDesc(fn($ascend) => (float)$ascend->grade);
+                return get_object_vars($ascend);
+            });
 
             $this->climberStats[$id] = [
                 'sessionCount' => $sessionCount,
