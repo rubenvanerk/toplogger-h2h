@@ -6,6 +6,8 @@
 
     <x-stats :climberStats="$climberStats"/>
 
+    <x-top-ten :climberStats="$climberStats"/>
+
     <div class="flex flex-col space-y-10 px-3">
         @foreach($ascendsByDate as $date => $ascendsByUser)
             <div>
@@ -27,7 +29,7 @@
 
                             <div class="flex flex-col space-y-1">
                                 @foreach($ascends as $ascend)
-                                    <x-ascend :grade="$ascend->climb->grade"
+                                    <x-ascend :grade="$ascend->climb->grade_font"
                                               :flash="$ascend->checks == 2"
                                               :color="$ascend->climb->hold_color"
                                               :wall="$ascend->climb->wall_name"

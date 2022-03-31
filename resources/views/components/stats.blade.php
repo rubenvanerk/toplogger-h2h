@@ -1,8 +1,8 @@
 @props(['climberStats'])
 
 @php
-    $climber1 = array_pop($climberStats);
-    $climber2 = array_pop($climberStats);
+    $climber1 = array_shift($climberStats);
+    $climber2 = array_shift($climberStats);
 @endphp
 
 <div class="grid grid-cols-3 justify-items-center items-center pb-5">
@@ -16,7 +16,7 @@
 
     <div>
         <span class=" text-2xl font-extrabold text-indigo-600 sm:text-3xl">
-            {{ $climber1['grade'] ?? 0 }}
+            {{ $climber1['grade_font'] ?? 0 }}
         </span>
         <sup class="font-medium text-xs text-gray-600">+{{ $climber1['grade_progress'] ?? 0 }}%</sup>
     </div>
@@ -25,7 +25,7 @@
     </div>
     <div>
         <span class="text-2xl font-extrabold text-indigo-600 sm:text-3xl">
-            {{ $climber2['grade'] ?? 0 }}
+            {{ $climber2['grade_font'] ?? 0 }}
         </span>
         <sup class="font-medium text-xs text-gray-600">+{{ $climber2['grade_progress'] ?? 0 }}%</sup>
     </div>
