@@ -1,4 +1,4 @@
-<div class="w-screen max-w-xl mx-auto" wire:loading.class="animate-pulse">
+<div class="w-screen max-w-xl mx-auto">
 
     <div wire:loading.class.remove="hidden" class="hidden">
         <div class="text-gray-800 mb-3 w-100 text-center">Data aan het verversen...</div>

@@ -55,16 +55,8 @@ class BouldersByDate extends Component
 
         // set grade to font & sort by grade
         $this->ascendsByDate = $this->ascendsByDate
-            ->sortByDesc(fn($ascend) => $ascend->climb->grade)
-            ->map(function ($ascend) {
-                $ascend->climb->grade_font = GradeConverter::toFont((float)$ascend->climb->grade);
-                $ascend->climb->gym_city = $this->getGym($ascend->climb->gym_id)->city;
-                $ascend->climb->gym_name = trim(str_replace($ascend->climb->gym_city, '', $this->getGym($ascend->climb->gym_id)->name));
-                $ascend->climb->wall_name = collect($this->getGym($ascend->climb->gym_id)->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
-                $ascend->climb->hold_color = collect($this->getGym($ascend->climb->gym_id)->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
-
-                return $ascend;
-            });
+            ->sortByDesc(fn($ascend) => (int)$ascend->checks)
+            ->sortByDesc(fn($ascend) => (float)$ascend->climb->grade);
 
         // group and sort by date
         $this->ascendsByDate = $this->ascendsByDate
@@ -80,6 +72,16 @@ class BouldersByDate extends Component
     {
         foreach ($this->climberIds as $userId => $climber) {
             $ascends = collect($this->getAscends(array_flip($this->climberUids)[$climber]));
+
+            $topTenAll = $ascends
+                ->sortByDesc(fn($ascend) => (new Carbon($ascend->date_logged))->unix())
+                ->sortByDesc(fn($ascend) => (int)$ascend->checks)
+                ->sortByDesc(fn($ascend) => (float)$ascend->climb->grade)
+                ->take(10)
+                ->map(function ($ascend) {
+                    $ascend->days_ago = (new Carbon($ascend->date_logged))->diffInDays(now());
+                    return json_decode(json_encode($ascend), true);
+                });
 
             $sessionCount = $ascends
                 ->groupBy(fn($ascend) => (new Carbon($ascend->date_logged))->format('Y-m-d'))
@@ -102,7 +104,8 @@ class BouldersByDate extends Component
                 'tops' => $ascends->count(),
                 'grade_font' => GradeConverter::toFont((float)$stats->grade),
                 'grade_progress' => GradeConverter::getProgress((float)$stats->grade),
-                'top_ten' => $stats->top_ten,
+                'top_ten_60d' => $stats->top_ten,
+                'top_ten_all' => $topTenAll,
             ];
         }
     }
@@ -126,7 +129,15 @@ class BouldersByDate extends Component
                     ->param(['serialize_checks' => true])
                     ->include(['climb'])
                     ->get()
-            )
+            )->map(function ($ascend) {
+                $ascend->climb->grade_font = GradeConverter::toFont((float)$ascend->climb->grade);
+                $ascend->climb->gym_city = $this->getGym($ascend->climb->gym_id)->city;
+                $ascend->climb->gym_name = trim(str_replace($ascend->climb->gym_city, '', $this->getGym($ascend->climb->gym_id)->name));
+                $ascend->climb->wall_name = collect($this->getGym($ascend->climb->gym_id)->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
+                $ascend->climb->hold_color = collect($this->getGym($ascend->climb->gym_id)->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
+
+                return $ascend;
+            })
         );
     }
 
