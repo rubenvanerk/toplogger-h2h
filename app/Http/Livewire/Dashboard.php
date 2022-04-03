@@ -39,9 +39,7 @@ class Dashboard extends Component
 
     public function mount(): void
     {
-        $this->createAscendsByDate();
-        $this->createStats();
-        $this->createChartData();
+        $this->generateData();
     }
 
     public function render(): View
@@ -49,12 +47,17 @@ class Dashboard extends Component
         return view('livewire.dashboard');
     }
 
-    public function refreshData(): void
+    protected function generateData(): void
     {
-        Cache::clear();
         $this->createAscendsByDate();
         $this->createStats();
         $this->createChartData();
+    }
+
+    public function refreshData(): void
+    {
+        Cache::clear();
+        $this->generateData();
     }
 
     private function createAscendsByDate(): void
@@ -65,7 +68,7 @@ class Dashboard extends Component
             $this->ascendsByDate = $this->ascendsByDate->merge($this->topLoggerService->getAscends($ids['uid']));
         }
 
-        // set grade to font & sort by grade
+        // sort by grade & flash
         $this->ascendsByDate = $this->ascendsByDate
             ->sortByDesc(fn($ascend) => (int)$ascend->checks)
             ->sortByDesc(fn($ascend) => (float)$ascend->climb->grade);
@@ -75,8 +78,9 @@ class Dashboard extends Component
             ->groupBy(fn($ascend) => (new Carbon($ascend->date_logged))->format('Y-m-d'))
             ->sortKeysDesc();
 
+        // group by user
         $this->ascendsByDate = $this->ascendsByDate->map(function (Collection $groupedAscends) {
-            return $groupedAscends->groupBy('user_id');
+            return $groupedAscends->groupBy(fn ($ascend) => $this->getClimberName($ascend->user_id));
         });
     }
 
@@ -145,5 +149,16 @@ class Dashboard extends Component
                 array_reverse(array_pad(array_reverse(array_values($flashes->toArray())), 6, 0)),
             ];
         }
+    }
+
+    protected function getClimberName($id): string
+    {
+        foreach ($this->climbers as $name => $climber) {
+            if ($climber['uid'] == $id || $climber['id'] == $id) {
+                return $name;
+            }
+        }
+
+        return '???';
     }
 }
