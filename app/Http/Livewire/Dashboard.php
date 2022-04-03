@@ -128,6 +128,8 @@ class Dashboard extends Component
 
     private function createChartData(): void
     {
+        $this->chartData = [];
+
         foreach ($this->climbers as $climberIds) {
             $ascends = $this->topLoggerService->getAscends($climberIds['uid']);
 
