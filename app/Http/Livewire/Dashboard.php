@@ -132,7 +132,7 @@ class Dashboard extends Component
             $ascends = $this->topLoggerService->getAscends($climberIds['uid']);
 
             $allAscends = $ascends->filter(fn($ascend) => $ascend->climb->grade >= 6);
-            $flashes = $allAscends->filter(fn($ascend) => $ascend->checks == 2);
+            $flashes = $allAscends->filter(fn($ascend) => (int)$ascend->checks === 2);
 
             $allAscends = $allAscends
                 ->groupBy(fn($ascend) => $ascend->climb->grade)
@@ -145,8 +145,8 @@ class Dashboard extends Component
                 ->mapWithKeys(fn($ascends, $key) => [$key => count($ascends)]);
 
             $this->chartData[] = [
-                array_reverse(array_pad(array_reverse(array_values($allAscends->toArray())), 6, 0)),
-                array_reverse(array_pad(array_reverse(array_values($flashes->toArray())), 6, 0)),
+                array_pad($allAscends->values()->toArray(), -6, 0),
+                array_pad($flashes->values()->toArray(), -6, 0),
             ];
         }
     }

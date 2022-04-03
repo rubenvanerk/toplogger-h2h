@@ -25,7 +25,9 @@ class TopLoggerService
                         ->filter(['user' => ['uid' => $userId]])
                         ->param(['serialize_checks' => true])
                         ->include(['climb'])
-                        ->get());
+                        ->get()
+                );
+
                 return $ascends->map(function ($ascend) use ($ascends) {
                     $gym = $this->getGym($ascend->climb->gym_id);
                     $ascend->climb->gym_city = $gym->city;
@@ -34,9 +36,8 @@ class TopLoggerService
                     $ascend->climb->wall_name = collect($gym->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
                     $ascend->climb->hold_color = collect($gym->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
 
-                    $ascend->is_repeat = (bool)$ascends->first(
+                    $ascend->is_repeat = $ascend->checks != 2 && $ascends->first(
                         fn($searchedAscend) => $ascend->climb_id == $searchedAscend->climb_id
-                            && $ascend->user_id == $searchedAscend->user_id
                             && $ascend->id != $searchedAscend->id
                             && (new Carbon($ascend->date_logged))->isAfter(new Carbon($searchedAscend->date_logged))
                     );

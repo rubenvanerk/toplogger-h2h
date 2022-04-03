@@ -26,7 +26,7 @@
                         <div class="flex flex-col space-y-1">
                             @foreach($ascends as $ascend)
                                 <x-ascend :grade="$ascend->climb->grade_font"
-                                          :flash="$ascend->checks == 2"
+                                          :flash="(int)$ascend->checks === 2"
                                           :color="$ascend->climb->hold_color"
                                           :description="$ascend->climb->wall_name"
                                           :isRepeat="$ascend->is_repeat ?? false"
