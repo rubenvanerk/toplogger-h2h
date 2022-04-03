@@ -105,10 +105,10 @@ class Dashboard extends Component
 
             $stats = $this->topLoggerService->getStats($climberIds['id']);
             $stats->top_ten = collect($stats->top_ten)->map(function ($ascend) use ($ascends) {
-                $ascend->grade_font = $this->gradeConverterService->toFont((float)$ascend->grade);
-
                 $ascend->gym_id = $ascends->firstWhere('climb_id', $ascend->climb_id)->climb->gym_id;
-                $ascend->gym_name = $this->topLoggerService->getGym($ascend->gym_id)?->name;
+                $gym = $this->topLoggerService->getGym($ascend->gym_id);
+                $ascend->gym_name = $gym?->name;
+                $ascend->grade_font = $this->gradeConverterService->toFont($ascend->grade, $gym->grading_system_boulders === 'french_rounded');
 
                 $ascend->days_ago = (new Carbon($ascend->date_logged))->diffInDays(now());
 
@@ -118,7 +118,7 @@ class Dashboard extends Component
             $this->climberStats[$name] = [
                 'sessionCount' => $sessionCount,
                 'tops' => $ascends->count(),
-                'grade_font' => $this->gradeConverterService->toFont((float)$stats->grade),
+                'grade_font' => $this->gradeConverterService->toFont($stats->grade),
                 'grade_progress' => $this->gradeConverterService->getProgress((float)$stats->grade),
                 'top_ten_60d' => $stats->top_ten,
                 'top_ten_all' => $topTenAll,

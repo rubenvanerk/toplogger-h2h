@@ -13,10 +13,36 @@ class GradeConverterService
         5 => 'c+',
     ];
 
-    public function toFont(float $grade): string
+    protected array $gradesRounded = [
+        '2' => '2',
+        '2.33' => '2+',
+        '2.5' => '2+',
+        '2.75' => '3-',
+        '2.67' => '3-',
+        '3.0' => '3',
+        '3.33' => '3+',
+        '3.67' => '4-',
+        '4.0' => '4',
+        '4.33' => '4+',
+        '4.67' => '5-',
+        '5.0' => '5',
+        '5.5' => '5+'
+    ];
+
+    public function toFont(string $grade, $rounded = false): string
     {
-        $mainGrade = floor($grade);
-        $subGrade = $this->subgrades[floor(($grade - $mainGrade) / 0.16)] ?? '?';
+        if ((float) $grade < 3) {
+            return $this->gradesRounded[$grade] ?? $grade;
+        }
+
+        if ($rounded && isset($this->gradesRounded[$grade])) {
+            return $this->gradesRounded[$grade];
+        }
+
+        $gradeAsNumber = (float)$grade;
+
+        $mainGrade = floor($gradeAsNumber);
+        $subGrade = $this->subgrades[floor(($gradeAsNumber - $mainGrade) / 0.16)] ?? '?';
         return $mainGrade . $subGrade;
     }
 

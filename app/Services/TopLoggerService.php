@@ -10,6 +10,10 @@ use stdClass;
 
 class TopLoggerService
 {
+    public function __construct(protected GradeConverterService $gradeConverterService = new GradeConverterService())
+    {
+    }
+
     public function getAscends($userId): Collection
     {
         return Cache::rememberForever(
@@ -23,8 +27,9 @@ class TopLoggerService
                         ->include(['climb'])
                         ->get());
                 return $ascends->map(function ($ascend) use ($ascends) {
-                    $ascend->climb->grade_font = $this->gradeConverterService->toFont((float)$ascend->climb->grade);
-                    $ascend->climb->gym_city = $this->getGym($ascend->climb->gym_id)->city;
+                    $gym = $this->getGym($ascend->climb->gym_id);
+                    $ascend->climb->gym_city = $gym->city;
+                    $ascend->climb->grade_font = $this->gradeConverterService->toFont($ascend->climb->grade, $gym->grading_system_boulders === 'french_rounded');
                     $ascend->climb->gym_name = trim(str_replace($ascend->climb->gym_city, '', $this->getGym($ascend->climb->gym_id)->name));
                     $ascend->climb->wall_name = collect($this->getGym($ascend->climb->gym_id)->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
                     $ascend->climb->hold_color = collect($this->getGym($ascend->climb->gym_id)->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;

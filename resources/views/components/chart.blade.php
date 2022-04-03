@@ -54,14 +54,13 @@
             </div>
 
             @if ($loop->first)
-                <div class="flex flex-col text-xs text-gray-600 justify-between items-center pb-5">
+                <div class="flex flex-col text-xs text-gray-600 justify-between items-center pb-9">
                     <span>6c+</span>
                     <span>6c</span>
                     <span>6b+</span>
                     <span>6b</span>
                     <span>6a+</span>
                     <span>6a</span>
-                    <span></span>
                 </div>
             @endif
         @endforeach
