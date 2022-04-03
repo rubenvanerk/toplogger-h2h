@@ -2,32 +2,40 @@
 
 namespace App\Http\Livewire;
 
-use App\Services\GradeConverter;
+use App\Services\GradeConverterService;
+use App\Services\TopLoggerService;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Component;
-use RubenVanErk\TopLoggerPhpSdk\TopLogger;
-use stdClass;
 
 class Dashboard extends Component
 {
     public Collection $ascendsByDate;
     public array $climberStats = [];
     public array $chartData = [];
+    protected GradeConverterService $gradeConverterService;
+    protected TopLoggerService $topLoggerService;
 
     protected $listeners = ['clearCache' => 'refreshData'];
 
-    public array $climberUids = [
-        '7163205870' => 'Ruben',
-        '2943357766' => 'Wouter',
+    public array $climbers = [
+        'Ruben' => [
+            'uid' => '7163205870',
+            'id' => '104045',
+        ],
+        'Wouter' => [
+            'uid' => '2943357766',
+            'id' => '106235',
+        ],
     ];
 
-    public array $climberIds = [
-        '104045' => 'Ruben',
-        '106235' => 'Wouter',
-    ];
+    public function boot(): void
+    {
+        $this->gradeConverterService = new GradeConverterService();
+        $this->topLoggerService = new TopLoggerService();
+    }
 
     public function mount(): void
     {
@@ -53,8 +61,8 @@ class Dashboard extends Component
     {
         $this->ascendsByDate = collect();
 
-        foreach ($this->climberUids as $uid => $climber) {
-            $this->ascendsByDate = $this->ascendsByDate->merge($this->getAscends($uid));
+        foreach ($this->climbers as $ids) {
+            $this->ascendsByDate = $this->ascendsByDate->merge($this->topLoggerService->getAscends($ids['uid']));
         }
 
         // set grade to font & sort by grade
@@ -74,8 +82,8 @@ class Dashboard extends Component
 
     protected function createStats(): void
     {
-        foreach ($this->climberIds as $userId => $climber) {
-            $ascends = $this->getAscends(array_flip($this->climberUids)[$climber]);
+        foreach ($this->climbers as $name => $climberIds) {
+            $ascends = $this->topLoggerService->getAscends($climberIds['uid']);
 
             $topTenAll = $ascends
                 ->sortByDesc(fn($ascend) => (new Carbon($ascend->date_logged))->unix())
@@ -91,81 +99,33 @@ class Dashboard extends Component
                 ->groupBy(fn($ascend) => (new Carbon($ascend->date_logged))->format('Y-m-d'))
                 ->count();
 
-            $stats = $this->getStats($userId);
+            $stats = $this->topLoggerService->getStats($climberIds['id']);
             $stats->top_ten = collect($stats->top_ten)->map(function ($ascend) use ($ascends) {
-                $ascend->grade_font = GradeConverter::toFont((float)$ascend->grade);
+                $ascend->grade_font = $this->gradeConverterService->toFont((float)$ascend->grade);
 
                 $ascend->gym_id = $ascends->firstWhere('climb_id', $ascend->climb_id)->climb->gym_id;
-                $ascend->gym_name = $this->getGym($ascend->gym_id)?->name;
+                $ascend->gym_name = $this->topLoggerService->getGym($ascend->gym_id)?->name;
 
                 $ascend->days_ago = (new Carbon($ascend->date_logged))->diffInDays(now());
 
                 return get_object_vars($ascend);
             });
 
-            $this->climberStats[$userId] = [
+            $this->climberStats[$name] = [
                 'sessionCount' => $sessionCount,
                 'tops' => $ascends->count(),
-                'grade_font' => GradeConverter::toFont((float)$stats->grade),
-                'grade_progress' => GradeConverter::getProgress((float)$stats->grade),
+                'grade_font' => $this->gradeConverterService->toFont((float)$stats->grade),
+                'grade_progress' => $this->gradeConverterService->getProgress((float)$stats->grade),
                 'top_ten_60d' => $stats->top_ten,
                 'top_ten_all' => $topTenAll,
             ];
         }
     }
 
-    protected function getGym($gymId): stdClass
-    {
-        return Cache::rememberForever(
-            'gyms' . $gymId,
-            fn() => (new TopLogger())->gyms()->include(['holds', 'walls'])->find($gymId)
-        );
-    }
-
-    public function getAscends($userId): Collection
-    {
-        return Cache::rememberForever(
-            'ascends' . $userId,
-            function () use ($userId) {
-                $ascends = collect(
-                    (new TopLogger())->ascends()
-                        ->filter(['used' => true])
-                        ->filter(['user' => ['uid' => $userId]])
-                        ->param(['serialize_checks' => true])
-                        ->include(['climb'])
-                        ->get());
-                return $ascends->map(function ($ascend) use ($ascends) {
-                    $ascend->climb->grade_font = GradeConverter::toFont((float)$ascend->climb->grade);
-                    $ascend->climb->gym_city = $this->getGym($ascend->climb->gym_id)->city;
-                    $ascend->climb->gym_name = trim(str_replace($ascend->climb->gym_city, '', $this->getGym($ascend->climb->gym_id)->name));
-                    $ascend->climb->wall_name = collect($this->getGym($ascend->climb->gym_id)->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
-                    $ascend->climb->hold_color = collect($this->getGym($ascend->climb->gym_id)->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
-
-                    $ascend->is_repeat = (bool)$ascends->first(
-                        fn($searchedAscend) => $ascend->climb_id == $searchedAscend->climb_id
-                            && $ascend->user_id == $searchedAscend->user_id
-                            && $ascend->id != $searchedAscend->id
-                            && (new Carbon($ascend->date_logged))->isAfter(new Carbon($searchedAscend->date_logged))
-                    );
-
-                    return $ascend;
-                });
-            }
-        );
-    }
-
-    protected function getStats(string $userId): stdClass
-    {
-        return Cache::rememberForever(
-            'stats' . $userId,
-            fn() => (new TopLogger())->users()->stats($userId)
-        );
-    }
-
     private function createChartData(): void
     {
-        foreach ($this->climberUids as $uid => $climber) {
-            $ascends = $this->getAscends($uid);
+        foreach ($this->climbers as $climberIds) {
+            $ascends = $this->topLoggerService->getAscends($climberIds['uid']);
 
             $allAscends = $ascends->filter(fn($ascend) => $ascend->climb->grade >= 6);
             $flashes = $allAscends->filter(fn($ascend) => $ascend->checks == 2);

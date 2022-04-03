@@ -10,10 +10,10 @@
     </div>
 
     <div class="flex space-x-2 justify-around sm:justify-items-start">
-        @foreach($climberStats as $userId => $stats)
+        @foreach($climberStats as $name => $stats)
             <div class="w-1/2 sm:w-52">
                 <div class="flex items-baseline space-x-1">
-                    <h2 class="text-xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">{{ $this->climberIds[$userId] }}</h2>
+                    <h2 class="text-xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">{{ $name }}</h2>
                 </div>
 
                 <div class="flex flex-col space-y-1" x-data x-show="period == '60d'">

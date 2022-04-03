@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-class GradeConverter
+class GradeConverterService
 {
-    public static array $subgrades = [
+    protected array $subgrades = [
         0 => 'a',
         1 => 'a+',
         2 => 'b',
@@ -13,17 +13,17 @@ class GradeConverter
         5 => 'c+',
     ];
 
-    public static function toFont(float $grade): string
+    public function toFont(float $grade): string
     {
         $mainGrade = floor($grade);
-        $subGrade = self::$subgrades[floor(($grade - $mainGrade) / 0.16)] ?? '?';
+        $subGrade = $this->subgrades[floor(($grade - $mainGrade) / 0.16)] ?? '?';
         return $mainGrade . $subGrade;
     }
 
-    public static function getProgress(float $grade): int
+    public function getProgress(float $grade): int
     {
         $mainGrade = floor($grade);
         $subGradeScore = $grade - $mainGrade;
-        return (int)round(fmod($subGradeScore, 1/6) / (1/6) * 100);
+        return (int)round(fmod($subGradeScore, 1 / 6) / (1 / 6) * 100);
     }
 }

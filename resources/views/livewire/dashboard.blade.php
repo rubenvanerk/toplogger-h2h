@@ -22,10 +22,10 @@
                 </div>
 
                 <div class="flex space-x-2 justify-around sm:justify-items-start">
-                    @foreach($ascendsByUser as $userId => $ascends)
+                    @foreach($ascendsByUser as $name => $ascends)
                         <div class="w-1/2 sm:w-52">
                             <div class="flex items-baseline space-x-1">
-                                <h2 class="text-xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">{{ $this->climberIds[$userId] }}</h2>
+                                <h2 class="text-xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">{{ $name }}</h2>
                                 <h4 class="text-sm text-gray-600">(totaal: {{ $ascends->count() }})</h4>
                             </div>
 
