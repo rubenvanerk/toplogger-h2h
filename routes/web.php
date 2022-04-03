@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Livewire\BouldersByDate;
+use App\Http\Livewire\Dashboard;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', BouldersByDate::class);
+Route::get('/', Dashboard::class);

@@ -11,7 +11,7 @@ use Livewire\Component;
 use RubenVanErk\TopLoggerPhpSdk\TopLogger;
 use stdClass;
 
-class BouldersByDate extends Component
+class Dashboard extends Component
 {
     public Collection $ascendsByDate;
     public array $climberStats = [];
@@ -31,25 +31,25 @@ class BouldersByDate extends Component
 
     public function mount(): void
     {
-        $this->createDataset();
+        $this->createAscendsByDate();
         $this->createStats();
         $this->createChartData();
     }
 
     public function render(): View
     {
-        return view('livewire.boulders-by-date');
+        return view('livewire.dashboard');
     }
 
     public function refreshData(): void
     {
         Cache::clear();
-        $this->createDataset();
+        $this->createAscendsByDate();
         $this->createStats();
         $this->createChartData();
     }
 
-    private function createDataset(): void
+    private function createAscendsByDate(): void
     {
         $this->ascendsByDate = collect();
 
@@ -75,7 +75,7 @@ class BouldersByDate extends Component
     protected function createStats(): void
     {
         foreach ($this->climberIds as $userId => $climber) {
-            $ascends = collect($this->getAscends(array_flip($this->climberUids)[$climber]));
+            $ascends = $this->getAscends(array_flip($this->climberUids)[$climber]);
 
             $topTenAll = $ascends
                 ->sortByDesc(fn($ascend) => (new Carbon($ascend->date_logged))->unix())
@@ -114,7 +114,7 @@ class BouldersByDate extends Component
         }
     }
 
-    protected function getGym($gymId)
+    protected function getGym($gymId): stdClass
     {
         return Cache::rememberForever(
             'gyms' . $gymId,
@@ -165,7 +165,7 @@ class BouldersByDate extends Component
     private function createChartData(): void
     {
         foreach ($this->climberUids as $uid => $climber) {
-            $ascends = collect($this->getAscends($uid));
+            $ascends = $this->getAscends($uid);
 
             $allAscends = $ascends->filter(fn($ascend) => $ascend->climb->grade >= 6);
             $flashes = $allAscends->filter(fn($ascend) => $ascend->checks == 2);
