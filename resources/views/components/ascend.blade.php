@@ -1,4 +1,4 @@
-@props(['grade', 'flash', 'color', 'description', 'isRepeat' => false])
+@props(['grade', 'flash', 'color', 'description' => '', 'isRepeat' => false])
 
 <li {{ $attributes->class('relative col-span-1 flex shadow-sm rounded-md') }}>
     <div class="flex-shrink-0 flex items-center justify-center w-10 text-white text-sm font-bold rounded-l-md text-shadow" style="background-color: {{ $color }}">

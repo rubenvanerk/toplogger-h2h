@@ -29,10 +29,10 @@ class TopLoggerService
                 return $ascends->map(function ($ascend) use ($ascends) {
                     $gym = $this->getGym($ascend->climb->gym_id);
                     $ascend->climb->gym_city = $gym->city;
+                    $ascend->climb->gym_name = trim(str_replace($ascend->climb->gym_city, '', $gym->name));
                     $ascend->climb->grade_font = $this->gradeConverterService->toFont($ascend->climb->grade, $gym->grading_system_boulders === 'french_rounded');
-                    $ascend->climb->gym_name = trim(str_replace($ascend->climb->gym_city, '', $this->getGym($ascend->climb->gym_id)->name));
-                    $ascend->climb->wall_name = collect($this->getGym($ascend->climb->gym_id)->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
-                    $ascend->climb->hold_color = collect($this->getGym($ascend->climb->gym_id)->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
+                    $ascend->climb->wall_name = collect($gym->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
+                    $ascend->climb->hold_color = collect($gym->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
 
                     $ascend->is_repeat = (bool)$ascends->first(
                         fn($searchedAscend) => $ascend->climb_id == $searchedAscend->climb_id
