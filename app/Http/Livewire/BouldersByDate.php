@@ -45,6 +45,8 @@ class BouldersByDate extends Component
     {
         Cache::clear();
         $this->createDataset();
+        $this->createStats();
+        $this->createChartData();
     }
 
     private function createDataset(): void
@@ -124,22 +126,31 @@ class BouldersByDate extends Component
     {
         return Cache::rememberForever(
             'ascends' . $userId,
-            fn() => collect(
-                (new TopLogger())->ascends()
-                    ->filter(['used' => true])
-                    ->filter(['user' => ['uid' => $userId]])
-                    ->param(['serialize_checks' => true])
-                    ->include(['climb'])
-                    ->get()
-            )->map(function ($ascend) {
-                $ascend->climb->grade_font = GradeConverter::toFont((float)$ascend->climb->grade);
-                $ascend->climb->gym_city = $this->getGym($ascend->climb->gym_id)->city;
-                $ascend->climb->gym_name = trim(str_replace($ascend->climb->gym_city, '', $this->getGym($ascend->climb->gym_id)->name));
-                $ascend->climb->wall_name = collect($this->getGym($ascend->climb->gym_id)->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
-                $ascend->climb->hold_color = collect($this->getGym($ascend->climb->gym_id)->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
+            function () use ($userId) {
+                $ascends = collect(
+                    (new TopLogger())->ascends()
+                        ->filter(['used' => true])
+                        ->filter(['user' => ['uid' => $userId]])
+                        ->param(['serialize_checks' => true])
+                        ->include(['climb'])
+                        ->get());
+                return $ascends->map(function ($ascend) use ($ascends) {
+                    $ascend->climb->grade_font = GradeConverter::toFont((float)$ascend->climb->grade);
+                    $ascend->climb->gym_city = $this->getGym($ascend->climb->gym_id)->city;
+                    $ascend->climb->gym_name = trim(str_replace($ascend->climb->gym_city, '', $this->getGym($ascend->climb->gym_id)->name));
+                    $ascend->climb->wall_name = collect($this->getGym($ascend->climb->gym_id)->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
+                    $ascend->climb->hold_color = collect($this->getGym($ascend->climb->gym_id)->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
 
-                return $ascend;
-            })
+                    $ascend->is_repeat = (bool)$ascends->first(
+                        fn($searchedAscend) => $ascend->climb_id == $searchedAscend->climb_id
+                            && $ascend->user_id == $searchedAscend->user_id
+                            && $ascend->id != $searchedAscend->id
+                            && (new Carbon($ascend->date_logged))->isAfter(new Carbon($searchedAscend->date_logged))
+                    );
+
+                    return $ascend;
+                });
+            }
         );
     }
 

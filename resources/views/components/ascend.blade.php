@@ -1,4 +1,4 @@
-@props(['grade', 'flash', 'color', 'wall'])
+@props(['grade', 'flash', 'color', 'wall', 'isRepeat' => false])
 
 <li {{ $attributes->class('relative col-span-1 flex shadow-sm rounded-md') }}>
     <div class="flex-shrink-0 flex items-center justify-center w-10 text-white text-sm font-bold rounded-l-md text-shadow" style="background-color: {{ $color }}">
@@ -10,6 +10,10 @@
                 {{ $wall }}
             </span>
         </div>
-        @if($flash)<x-icons.lightning-bolt class="mr-1 w-4 h-4 text-amber-500"/>@endif
+        @if($flash)
+            <x-icons.lightning-bolt class="mr-1 w-4 h-4 text-amber-500"/>
+        @elseif($isRepeat)
+            <x-icons.refresh class="mr-1 w-4 h-4 text-gray-500"/>
+        @endif
     </div>
 </li>

@@ -1,7 +1,7 @@
 <div class="w-screen max-w-xl mx-auto">
 
     <div wire:loading.class.remove="hidden" class="hidden">
-        <div class="text-gray-800 mb-3 w-100 text-center">Data aan het verversen...</div>
+        <div class="text-gray-800 mb-3 w-100 text-center animate-pulse">Data aan het verversen...</div>
     </div>
 
     <x-stats :climberStats="$climberStats"/>
@@ -35,6 +35,7 @@
                                               :flash="$ascend->checks == 2"
                                               :color="$ascend->climb->hold_color"
                                               :wall="$ascend->climb->wall_name"
+                                              :isRepeat="$ascend->is_repeat ?? false"
                                     />
                                 @endforeach
                             </div>
