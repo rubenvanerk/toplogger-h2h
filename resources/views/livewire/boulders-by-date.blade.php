@@ -8,6 +8,8 @@
 
     <x-top-ten :climberStats="$climberStats"/>
 
+    <x-chart :chartData="$chartData"/>
+
     <div class="flex flex-col space-y-10 px-3">
         @foreach($ascendsByDate as $date => $ascendsByUser)
             <div>

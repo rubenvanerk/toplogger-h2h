@@ -1,4 +1,4 @@
-<div class="px-3 mb-4" x-data="{ period: '60d' }">
+<div class="px-3 mb-10" x-data="{ period: '60d' }">
 
     <div class="border-b border-gray-200 pb-1 mb-2 flex justify-between items-center">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Top 10</h2>

@@ -15,6 +15,7 @@ class BouldersByDate extends Component
 {
     public Collection $ascendsByDate;
     public array $climberStats = [];
+    public array $chartData = [];
 
     protected $listeners = ['clearCache' => 'refreshData'];
 
@@ -32,6 +33,7 @@ class BouldersByDate extends Component
     {
         $this->createDataset();
         $this->createStats();
+        $this->createChartData();
     }
 
     public function render(): View
@@ -147,5 +149,30 @@ class BouldersByDate extends Component
             'stats' . $userId,
             fn() => (new TopLogger())->users()->stats($userId)
         );
+    }
+
+    private function createChartData(): void
+    {
+        foreach ($this->climberUids as $uid => $climber) {
+            $ascends = collect($this->getAscends($uid));
+
+            $allAscends = $ascends->filter(fn($ascend) => $ascend->climb->grade >= 6);
+            $flashes = $allAscends->filter(fn($ascend) => $ascend->checks == 2);
+
+            $allAscends = $allAscends
+                ->groupBy(fn($ascend) => $ascend->climb->grade)
+                ->sortKeysDesc()
+                ->mapWithKeys(fn($ascends, $key) => [$key => count($ascends)]);
+
+            $flashes = $flashes
+                ->groupBy(fn($ascend) => $ascend->climb->grade)
+                ->sortKeysDesc()
+                ->mapWithKeys(fn($ascends, $key) => [$key => count($ascends)]);
+
+            $this->chartData[] = [
+                array_reverse(array_pad(array_reverse(array_values($allAscends->toArray())), 6, 0)),
+                array_reverse(array_pad(array_reverse(array_values($flashes->toArray())), 6, 0)),
+            ];
+        }
     }
 }
