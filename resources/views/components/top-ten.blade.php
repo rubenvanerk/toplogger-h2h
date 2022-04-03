@@ -4,7 +4,7 @@
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Top 10</h2>
         <select x-model="period"
             class="block pl-3 pr-10 py-1.5 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-            <option value="60d">60d</option>
+            <option value="60d" selected>60d</option>
             <option value="all">Alles</option>
         </select>
     </div>
