@@ -1,7 +1,7 @@
 @props(['chartData'])
 
 @php
-    $max = max(array_reduce(Arr::first($chartData[0]), 'max'), array_reduce(Arr::first($chartData[1]), 'max'));
+    $max = max(array_reduce(Arr::first($chartData['Ruben']), 'max'), array_reduce(Arr::first($chartData['Wouter']), 'max'));
     $maxScale = ceil($max / 10) * 10;
 @endphp
 
@@ -10,7 +10,7 @@
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">6a - 6c+ chart alles</h2>
     </div>
     <div class="grid grid-cols-11">
-        @foreach($chartData as $data)
+        @foreach($chartData as $name => $data)
             <div class="col-span-5" x-data="{
                     labels: ['6c+', '6c', '6b+', '6b', '6a+', '6a'],
                     values: @json($data),
@@ -50,11 +50,14 @@
                         })
                     }
                 }">
+                <div class="mb-1">
+                    <span class="text-2xl font-bold leading-7 text-gray-800 sm:text-3xl sm:truncate pl-3">{{ $name }}</span>
+                </div>
                 <canvas x-ref="canvas" height="350"></canvas>
             </div>
 
             @if ($loop->first)
-                <div class="flex flex-col text-xs text-gray-600 justify-between items-center pb-9">
+                <div class="flex flex-col text-xs text-gray-600 justify-between items-center pb-9 pt-9">
                     <span>6c+</span>
                     <span>6c</span>
                     <span>6b+</span>

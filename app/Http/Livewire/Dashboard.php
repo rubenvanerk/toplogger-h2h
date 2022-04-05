@@ -132,7 +132,7 @@ class Dashboard extends Component
     {
         $this->chartData = [];
 
-        foreach ($this->climbers as $climberIds) {
+        foreach ($this->climbers as $name => $climberIds) {
             $ascends = $this->topLoggerService->getAscends($climberIds['uid']);
 
             $allAscends = $ascends->filter(fn($ascend) => $ascend->climb->grade >= 6);
@@ -148,7 +148,7 @@ class Dashboard extends Component
                 ->sortKeysDesc()
                 ->mapWithKeys(fn($ascends, $key) => [$key => count($ascends)]);
 
-            $this->chartData[] = [
+            $this->chartData[$name] = [
                 array_pad($allAscends->values()->toArray(), -6, 0),
                 array_pad($flashes->values()->toArray(), -6, 0),
             ];
