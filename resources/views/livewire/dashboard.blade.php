@@ -10,6 +10,8 @@
 
     <x-chart :chartData="$chartData"/>
 
+    <x-new-climbs :gyms="$gyms"/>
+
     <x-ascends-by-date :ascendsByDate="$ascendsByDate"/>
 
 </div>

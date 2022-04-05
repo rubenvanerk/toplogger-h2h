@@ -15,6 +15,7 @@ class Dashboard extends Component
     public Collection $ascendsByDate;
     public array $climberStats = [];
     public array $chartData = [];
+    public array $gyms = [];
     protected GradeConverterService $gradeConverterService;
     protected TopLoggerService $topLoggerService;
 
@@ -52,6 +53,7 @@ class Dashboard extends Component
         $this->createAscendsByDate();
         $this->createStats();
         $this->createChartData();
+        $this->generateGymData();
     }
 
     public function refreshData(): void
@@ -80,11 +82,11 @@ class Dashboard extends Component
 
         // group by user
         $this->ascendsByDate = $this->ascendsByDate->map(function (Collection $groupedAscends) {
-            return $groupedAscends->groupBy(fn ($ascend) => $this->getClimberName($ascend->user_id));
+            return $groupedAscends->groupBy(fn($ascend) => $this->getClimberName($ascend->user_id));
         });
     }
 
-    protected function createStats(): void
+    private function createStats(): void
     {
         foreach ($this->climbers as $name => $climberIds) {
             $ascends = $this->topLoggerService->getAscends($climberIds['uid']);
@@ -153,7 +155,52 @@ class Dashboard extends Component
         }
     }
 
-    protected function getClimberName($id): string
+    private function generateGymData()
+    {
+        $ascends = collect();
+        foreach ($this->climbers as $climber) {
+            $ascends = $ascends->merge($this->topLoggerService->getAscends($climber['uid']));
+        }
+
+        $gymIds = $ascends->sortByDesc(fn($ascend) => new Carbon($ascend->date_logged))
+            ->unique('climb.gym_id')
+            ->mapWithKeys(fn($ascend) => [$ascend->climb->gym_id => new Carbon($ascend->date_logged)]);
+        $gyms = collect();
+
+        /** @var Carbon $lastSessionAt */
+        foreach ($gymIds as $gymId => $lastSessionAt) {
+            $gym = $this->topLoggerService->getGym($gymId);
+            $climbsSinceLastSession = collect($this->topLoggerService->getClimbs($gymId))
+                ->filter(fn($climb) => (new Carbon($climb->date_set))->isAfter($lastSessionAt));
+            $gym->new_climbs = $climbsSinceLastSession;
+            $gym->last_session_at = $lastSessionAt;
+            $gym->weeks_since_last_session = $lastSessionAt->diffInWeeks();
+
+            $allAscends = $gym->new_climbs
+                ->filter(fn($climb) => $climb->grade >= 6 && $climb->grade < 7)
+                ->groupBy(fn($climb) => $climb->grade)
+                ->sortKeys()
+                ->mapWithKeys(fn($ascends, $key) => [$key => count($ascends)]);
+
+            $chartData = array_merge([
+                '6.0' => 0,
+                '6.17' => 0,
+                '6.33' => 0,
+                '6.5' => 0,
+                '6.67' => 0,
+                '6.83' => 0,
+            ], $allAscends->toArray());
+
+            $gym->chart_data = array_values($chartData);
+
+            $gyms->push($gym);
+
+        }
+
+        $this->gyms = $gyms->toArray();
+    }
+
+    private function getClimberName($id): string
     {
         foreach ($this->climbers as $name => $climber) {
             if ($climber['uid'] == $id || $climber['id'] == $id) {

@@ -56,6 +56,14 @@ class TopLoggerService
         );
     }
 
+    public function getClimbs($gymId): array
+    {
+        return Cache::rememberForever(
+            'climbs' . $gymId,
+            fn() => (new TopLogger())->gyms()->climbs($gymId)->filter(['deleted' => false, 'live' => true, 'climb_type' => 'boulder'])->get()
+        );
+    }
+
     public function getStats(string $userId): stdClass
     {
         return Cache::rememberForever(
