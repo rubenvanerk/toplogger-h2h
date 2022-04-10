@@ -5,7 +5,7 @@
     $maxScale = ceil($max / 10) * 10;
 @endphp
 
-<div class="mb-10">
+<div {{ $attributes->class(['mb-10']) }}>
     <div class="pb-1 mb-2 px-3">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">6a - 6c+ chart alles</h2>
     </div>

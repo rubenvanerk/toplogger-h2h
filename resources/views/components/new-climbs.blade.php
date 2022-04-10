@@ -10,7 +10,7 @@
     ];
 @endphp
 
-<div class="px-3 mb-10">
+<div {{ $attributes->class(['px-3 mb-10']) }}>
     <div class="border-b border-gray-200 pb-1 mb-2 flex justify-between items-center">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Nieuwe boulders</h2>
     </div>

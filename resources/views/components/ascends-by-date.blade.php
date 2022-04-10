@@ -1,6 +1,6 @@
 @props(['ascendsByDate'])
 
-<div class="flex flex-col space-y-10 px-3">
+<div {{ $attributes->class(['flex flex-col space-y-10 px-3']) }}>
     @foreach($ascendsByDate as $date => $ascendsByUser)
         @php $firstAscend = $ascendsByUser->first()->first() @endphp
 

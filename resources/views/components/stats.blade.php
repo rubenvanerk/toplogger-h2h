@@ -5,7 +5,7 @@
     $climber2 = array_shift($climberStats);
 @endphp
 
-<div class="grid grid-cols-3 justify-items-center items-center pb-10">
+<div {{ $attributes->class(['grid grid-cols-3 justify-items-center items-center pb-10']) }}>
     <div class="mb-1">
         <span class="text-2xl font-bold leading-7 text-gray-800 sm:text-3xl sm:truncate">Ruben</span>
     </div>
