@@ -32,7 +32,11 @@ class TopLoggerService
                     $gym = $this->getGym($ascend->climb->gym_id);
                     $ascend->climb->gym_city = $gym->city;
                     $ascend->climb->gym_name = str($gym->name)->replace($ascend->climb->gym_city, '')->trim();
-                    $ascend->climb->grade_font = $this->gradeConverterService->toFont($ascend->climb->grade, $gym->grading_system_boulders === 'french_rounded');
+                    $customGrading = $gym->grading_system_custom_boulders_json ?? null;
+                    if ($customGrading) {
+                        $customGrading = json_decode($customGrading, false)->data;
+                    }
+                    $ascend->climb->grade_font = $this->gradeConverterService->toFont($ascend->climb->grade, $gym->grading_system_boulders === 'french_rounded', $customGrading);
                     $ascend->climb->wall_name = collect($gym->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
                     $ascend->climb->hold_color = collect($gym->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
 

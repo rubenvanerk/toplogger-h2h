@@ -6,8 +6,15 @@ use Barryvdh\Debugbar\Facades\Debugbar;
 
 class GradeConverterService
 {
-    public function toFont(string $grade, $rounded = false): string
+    public function toFont(string $grade, bool $rounded = false, ?array $customGrades = null): string
     {
+        if ($customGrades) {
+            $customGrade = collect($customGrades)->firstWhere(fn ($customGrade) => $grade == $customGrade->value)?->name;
+            if ($customGrade) {
+                return $customGrade;
+            }
+        }
+
         if ($rounded && isset(config('grades.rounded')[$grade])) {
             return config('grades.rounded')[$grade];
         }
