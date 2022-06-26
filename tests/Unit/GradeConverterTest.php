@@ -11,10 +11,10 @@ it('Converts progress grades correctly', function () {
     $gradeConverter = new \App\Services\GradeConverterService();
 
     $convertedGrade = $gradeConverter->toFont('6.49901');
-    expect($convertedGrade)->toBe('6b');
+    expect($convertedGrade)->toBe('6b+');
 
     $progress = $gradeConverter->getProgress('6.49901');
-    expect($progress)->toBe(99);
+    expect($progress)->toBe(0);
 });
 
 
