@@ -42,7 +42,8 @@ class GradeConverterService
         $gradeAsNumber = (float)$grade;
 
         $mainGrade = floor($gradeAsNumber);
-        $subGrade = $this->subgrades[floor(($gradeAsNumber - $mainGrade) / 0.16)] ?? '?';
+        $subGrade = $this->subgrades[floor(($gradeAsNumber - $mainGrade) / (1 / 6))] ?? '?';
+
         return $mainGrade . $subGrade;
     }
 
