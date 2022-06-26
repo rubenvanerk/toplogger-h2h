@@ -31,7 +31,7 @@ class TopLoggerService
                 return $ascends->map(function ($ascend) use ($ascends) {
                     $gym = $this->getGym($ascend->climb->gym_id);
                     $ascend->climb->gym_city = $gym->city;
-                    $ascend->climb->gym_name = trim(str_replace($ascend->climb->gym_city, '', $gym->name));
+                    $ascend->climb->gym_name = str($gym->name)->replace($ascend->climb->gym_city, '')->trim();
                     $ascend->climb->grade_font = $this->gradeConverterService->toFont($ascend->climb->grade, $gym->grading_system_boulders === 'french_rounded');
                     $ascend->climb->wall_name = collect($gym->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
                     $ascend->climb->hold_color = collect($gym->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
