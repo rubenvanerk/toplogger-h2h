@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Barryvdh\Debugbar\Facades\Debugbar;
+
 class GradeConverterService
 {
     public function toFont(string $grade, $rounded = false): string
@@ -14,7 +16,7 @@ class GradeConverterService
             return config('grades')[$grade];
         }
 
-        $gradeAsNumber = (float)$grade;
+        $gradeAsNumber = round((float)$grade * 100) / 100;
 
         $mainGrade = floor($gradeAsNumber);
         $subGrade = config('grades.sub_grades')[floor(($gradeAsNumber - $mainGrade) / (1 / 6))] ?? '?';
@@ -24,6 +26,8 @@ class GradeConverterService
 
     public function getProgress(float $grade): int
     {
+        $grade = (round($grade * 100) / 100);
+
         $mainGrade = floor($grade);
         $subGradeScore = $grade - $mainGrade;
         return (int)round(fmod($subGradeScore, 1 / 6) / (1 / 6) * 100);
