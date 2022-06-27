@@ -1,11 +1,11 @@
-@props(['chartData', 'strengthHistory'])
+@props(['chartData', 'strengthHistory', 'strengthHistoryDifference'])
 
 @php
     $max = max(array_reduce(Arr::first($chartData['Ruben']), 'max'), array_reduce(Arr::first($chartData['Wouter']), 'max'));
     $maxScale = ceil($max / 10) * 10;
 @endphp
 
-<div {{ $attributes->class(['mb-10']) }}>
+<div {{ $attributes->class(['mb-10 flex-col space-y-10']) }}>
     <div class="pb-1 mb-2 px-3">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">6a - 6c+ chart alles</h2>
     </div>
@@ -69,15 +69,16 @@
             @endif
         @endforeach
     </div>
-</div>
-
-<div {{ $attributes->class(['mb-10']) }}>
-    <div class="pb-1 mb-2 px-3">
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Kracht historie</h2>
-    </div>
 
 
-    <div x-data="{
+
+    <div>
+        <div class="pb-1 mb-2 px-3">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Kracht historie</h2>
+        </div>
+
+
+        <div x-data="{
                 labels: {{ json_encode($strengthHistory['labels']) }},
                 values: {{ json_encode($strengthHistory['data']) }},
                 init() {
@@ -102,6 +103,37 @@
                     })
                 }
             }">
-        <canvas x-ref="canvas" height="350"></canvas>
+            <canvas x-ref="canvas" height="350"></canvas>
+        </div>
+    </div>
+
+    <div>
+        <div class="pb-1 mb-2 px-3">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Kracht verschil</h2>
+        </div>
+
+
+        <div x-data="{
+                labels: {{ json_encode($strengthHistory['labels']) }},
+                values: {{ json_encode($strengthHistoryDifference) }},
+                init() {
+                    let chart = new Chart(this.$refs.canvas.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: this.labels,
+                            datasets: [
+                                {
+                                    data: this.values,
+                                    backgroundColor: '#4F46E5',
+                                    borderColor: '#4F46E5',
+                                    label: 'Verschil'
+                                }
+                            ],
+                        },
+                    })
+                }
+            }">
+            <canvas x-ref="canvas" height="350"></canvas>
+        </div>
     </div>
 </div>

@@ -16,6 +16,7 @@ class Dashboard extends Component
     public array $climberStats = [];
     public array $chartData = [];
     public array $strengthHistory = [];
+    public array $strengthHistoryDifference = [];
     public array $gyms = [];
     protected GradeConverterService $gradeConverterService;
     protected TopLoggerService $topLoggerService;
@@ -175,6 +176,9 @@ class Dashboard extends Component
                 ->map(fn($date) => (new Carbon($date))->format('d-m-Y'))
                 ->values();
         }
+
+        $combined = collect(collect($this->strengthHistory['data'])->first())->zip(collect($this->strengthHistory['data'])->last());
+        $this->strengthHistoryDifference = $combined->map(fn($pair) => $pair[0] - $pair[1])->toArray();
     }
 
     private function generateGymData()

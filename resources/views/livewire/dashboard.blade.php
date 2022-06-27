@@ -32,7 +32,7 @@
 
     <x-top-ten :climberStats="$climberStats" x-show="currentTab == 'stats'"/>
 
-    <x-chart :chartData="$chartData" :strengthHistory="$strengthHistory" x-show="currentTab == 'chart'" x-cloak/>
+    <x-chart :chartData="$chartData" :strengthHistory="$strengthHistory" :strengthHistoryDifference="$strengthHistoryDifference" x-show="currentTab == 'chart'" x-cloak/>
 
     <x-new-climbs :gyms="$gyms" x-show="currentTab == 'new'" x-cloak/>
 
