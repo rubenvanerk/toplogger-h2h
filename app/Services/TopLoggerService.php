@@ -75,4 +75,12 @@ class TopLoggerService
             fn() => (new TopLogger())->users()->stats($userId)
         );
     }
+
+    public function getStrengthHistory(string $userId): stdClass
+    {
+        return Cache::rememberForever(
+            'strength_history' . $userId,
+            fn() => (new TopLogger())->users()->strengthHistory($userId)
+        );
+    }
 }

@@ -15,6 +15,7 @@ class Dashboard extends Component
     public Collection $ascendsByDate;
     public array $climberStats = [];
     public array $chartData = [];
+    public array $strengthHistory = [];
     public array $gyms = [];
     protected GradeConverterService $gradeConverterService;
     protected TopLoggerService $topLoggerService;
@@ -54,6 +55,7 @@ class Dashboard extends Component
         $this->createStats();
         $this->createChartData();
         $this->generateGymData();
+        $this->createStrengthHistory();
     }
 
     public function refreshData(): void
@@ -152,6 +154,26 @@ class Dashboard extends Component
                 array_pad($allAscends->values()->toArray(), -6, 0),
                 array_pad($flashes->values()->toArray(), -6, 0),
             ];
+        }
+    }
+
+    private function createStrengthHistory()
+    {
+        $this->strengthHistory = [];
+
+        foreach ($this->climbers as $name => $climberIds) {
+            $strengthHistory = $this->topLoggerService->getStrengthHistory($climberIds['id']);
+
+            $this->strengthHistory['data'][] = collect($strengthHistory->data)
+                ->pluck('adjusted_grade')
+                ->skip(3)
+                ->map(fn($grade) => (float)$grade ?: 0)
+                ->values();
+            $this->strengthHistory['labels'] = collect($strengthHistory->data)
+                ->pluck('date')
+                ->skip(3)
+                ->map(fn($date) => (new Carbon($date))->format('d-m-Y'))
+                ->values();
         }
     }
 
