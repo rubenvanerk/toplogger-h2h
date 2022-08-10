@@ -80,6 +80,7 @@ class Dashboard extends Component
 
         // group and sort by date
         $this->ascendsByDate = $this->ascendsByDate
+            ->sortBy(fn($ascend) => $ascend->user_id)
             ->groupBy(fn($ascend) => (new Carbon($ascend->date_logged))->format('Y-m-d'))
             ->sortKeysDesc();
 
