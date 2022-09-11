@@ -11,7 +11,7 @@
                         </div>
                     </div>
                     <div class="my-auto" x-data>
-                        <x-button x-on:click="window.livewire.emit('clearCache')">
+                        <x-button x-on:click="window.livewire.emit('clearCache')" wire:loading.attr="disabled">
                             Ververs data
                         </x-button>
                     </div>
