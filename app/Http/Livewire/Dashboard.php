@@ -63,7 +63,7 @@ class Dashboard extends Component
     {
         Cache::clear();
         $this->generateData();
-        Cache::put('updated_at', now()->subMinutes(5));
+        Cache::put('updated_at', now());
     }
 
     private function createAscendsByDate(): void
