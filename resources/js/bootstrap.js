@@ -1,6 +1,6 @@
 import Alpine from 'alpinejs';
 
-require('./tooltip')
+import './tooltip'
 
 window.Alpine = Alpine;
 
