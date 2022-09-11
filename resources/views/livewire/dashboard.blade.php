@@ -44,9 +44,11 @@
     <x-ascends-by-date :ascendsByDate="$ascendsByDate" x-show="currentTab == 'sessions'" x-cloak/>
 
 
-    <p class="text-gray-800 mb-3 w-100 text-center">
-        <span class="text-sm text-gray-600">Laatst bijgewerkt op:</span><br>
-        {{ cache('updated_at')->timeZone('Europe/Amsterdam')->locale('nl')->isoFormat('LLL') }}
-    </p>
+    @if(cache('updated_at'))
+        <p class="text-gray-800 mb-3 w-100 text-center">
+            <span class="text-sm text-gray-600">Laatst bijgewerkt op:</span><br>
+            {{ cache('updated_at')->timeZone('Europe/Amsterdam')->locale('nl')->isoFormat('LLL') }}
+        </p>
+    @endif
 
 </div>
