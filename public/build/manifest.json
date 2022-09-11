@@ -11,9 +11,9 @@
     "file": "assets/app.a1ae07b3.css",
     "src": "resources/js/app.css"
   },
-  "resources/sass/app.scss": {
-    "file": "assets/app.21d00f31.css",
-    "src": "resources/sass/app.scss",
+  "resources/css/app.css": {
+    "file": "assets/app.561252cb.css",
+    "src": "resources/css/app.css",
     "isEntry": true
   }
 }
