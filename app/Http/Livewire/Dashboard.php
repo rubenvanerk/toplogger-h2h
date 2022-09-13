@@ -199,7 +199,12 @@ class Dashboard extends Component
         foreach ($gymIds as $gymId => $lastSessionAt) {
             $gym = $this->topLoggerService->getGym($gymId);
             $climbsSinceLastSession = collect($this->topLoggerService->getClimbs($gymId))
-                ->filter(fn($climb) => (new Carbon($climb->date_set))->isAfter($lastSessionAt));
+                ->filter(function ($climb) use ($lastSessionAt) {
+                    if (!property_exists($climb, 'date_set')) {
+                        return null;
+                    }
+                    return (new Carbon($climb->date_set))->isAfter($lastSessionAt);
+                });
             $gym->new_climbs = $climbsSinceLastSession;
             $gym->last_session_at = $lastSessionAt;
             $gym->weeks_since_last_session = $lastSessionAt->diffInWeeks();
