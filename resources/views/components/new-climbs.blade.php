@@ -2,11 +2,14 @@
 
 @php
     $colors = [
+        '#ef4444', // red-500
         '#F97316', // orange-500
         '#10B981', // emerald-500
         '#06B6D4', // cyan-500
         '#6366F1', // indigo-500
         '#D946EF', // fucksia-500
+        '#f97316', // orange-500
+        '#84cc16', // lime-500
     ];
 @endphp
 
