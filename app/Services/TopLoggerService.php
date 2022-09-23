@@ -17,7 +17,7 @@ class TopLoggerService
     public function getAscends($userId): Collection
     {
         return Cache::rememberForever(
-            'ascends' . $userId,
+            'ascends'.$userId,
             function () use ($userId) {
                 $ascends = collect(
                     (new TopLogger())->ascends()
@@ -41,7 +41,7 @@ class TopLoggerService
                     $ascend->climb->hold_color = collect($gym->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
 
                     $ascend->is_repeat = $ascend->checks != 2 && $ascends->first(
-                        fn($searchedAscend) => $ascend->climb_id == $searchedAscend->climb_id
+                        fn ($searchedAscend) => $ascend->climb_id == $searchedAscend->climb_id
                             && $ascend->id != $searchedAscend->id
                             && (new Carbon($ascend->date_logged))->isAfter(new Carbon($searchedAscend->date_logged))
                     );
@@ -55,32 +55,32 @@ class TopLoggerService
     public function getGym($gymId): stdClass
     {
         return Cache::rememberForever(
-            'gyms' . $gymId,
-            fn() => (new TopLogger())->gyms()->include(['holds', 'walls'])->find($gymId)
+            'gyms'.$gymId,
+            fn () => (new TopLogger())->gyms()->include(['holds', 'walls'])->find($gymId)
         );
     }
 
     public function getClimbs($gymId): array
     {
         return Cache::rememberForever(
-            'climbs' . $gymId,
-            fn() => (new TopLogger())->gyms()->climbs($gymId)->filter(['deleted' => false, 'live' => true, 'climb_type' => 'boulder'])->get()
+            'climbs'.$gymId,
+            fn () => (new TopLogger())->gyms()->climbs($gymId)->filter(['deleted' => false, 'live' => true, 'climb_type' => 'boulder'])->get()
         );
     }
 
     public function getStats(string $userId): stdClass
     {
         return Cache::rememberForever(
-            'stats' . $userId,
-            fn() => (new TopLogger())->users()->stats($userId)
+            'stats'.$userId,
+            fn () => (new TopLogger())->users()->stats($userId)
         );
     }
 
     public function getStrengthHistory(string $userId): stdClass
     {
         return Cache::rememberForever(
-            'strength_history' . $userId,
-            fn() => (new TopLogger())->users()->strengthHistory($userId)
+            'strength_history'.$userId,
+            fn () => (new TopLogger())->users()->strengthHistory($userId)
         );
     }
 }
