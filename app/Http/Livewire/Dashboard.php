@@ -68,7 +68,7 @@ class Dashboard extends Component
 
     public function refreshData(): void
     {
-        Cache::clear();
+        Cache::flush();
         $this->generateData();
         Cache::put('updated_at', now());
     }
