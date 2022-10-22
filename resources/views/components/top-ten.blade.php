@@ -23,6 +23,7 @@
                         <x-ascend :grade="$ascend['grade_font']"
                                   :flash="$ascend['checks'] == 2"
                                   :color="$ascend['color']"
+                                  :secondary-color="$ascend['color_secondary']"
                                   :description="$ascend['gym_name'] ?? ''"
                                   x-tooltip="{{ $ascend['wall_name'] }}, {{ $ascend['days_ago'] }} dagen geleden"
                         />
@@ -41,6 +42,7 @@
                         <x-ascend :grade="$ascend['climb']['grade_font']"
                                   :flash="$ascend['checks'] == 2"
                                   :color="$ascend['climb']['hold_color']"
+                                  :secondary-color="$ascend['climb']['hold_color_secondary']"
                                   :description="$ascend['climb']['gym_name']"
                                   x-tooltip="{{ $ascend['climb']['wall_name'] }}, {{ $ascend['days_ago'] }} dagen geleden"
                         />

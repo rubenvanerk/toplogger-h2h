@@ -1,7 +1,8 @@
-@props(['grade', 'flash', 'color', 'description' => '', 'isRepeat' => false])
+@props(['grade', 'flash', 'color', 'secondaryColor' => null, 'description' => '', 'isRepeat' => false])
 
 <li {{ $attributes->class('relative col-span-1 flex shadow-sm rounded-md') }}>
-    <div class="flex-shrink-0 flex items-center justify-center w-10 text-white text-sm font-bold rounded-l-md text-shadow" style="background-color: {{ $color }}">
+    <div class="flex-shrink-0 flex items-center justify-center w-10 text-white text-sm font-bold rounded-l-md text-shadow"
+         style="@if($secondaryColor) background: linear-gradient(to left top, {{ $secondaryColor }} 50%, {{ $color }} 50%); @else background-color: {{ $color }}; @endif">
         {{ $grade }}
     </div>
     <div class="flex-1 flex items-center justify-between border-t border-r border-b border-gray-200 bg-white rounded-r-md truncate">

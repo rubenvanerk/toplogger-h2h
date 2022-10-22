@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -38,7 +39,10 @@ class TopLoggerService
                     }
                     $ascend->climb->grade_font = $this->gradeConverterService->toFont($ascend->climb->grade, $gym->grading_system_boulders === 'french_rounded', $customGrading);
                     $ascend->climb->wall_name = collect($gym->walls)->firstWhere('id', $ascend->climb->wall_id ?? null)?->name;
-                    $ascend->climb->hold_color = collect($gym->holds)->firstWhere('id', $ascend->climb->hold_id ?? null)?->color;
+
+                    $hold = collect($gym->holds)->firstWhere('id', $ascend->climb->hold_id ?? null);
+                    $ascend->climb->hold_color = $hold?->color;
+                    $ascend->climb->hold_color_secondary = property_exists($hold, 'color_secondary') ? $hold?->color_secondary : null;
 
                     $ascend->is_repeat = $ascend->checks != 2 && $ascends->first(
                         fn ($searchedAscend) => $ascend->climb_id == $searchedAscend->climb_id

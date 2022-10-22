@@ -28,6 +28,7 @@
                                 <x-ascend :grade="$ascend->climb->grade_font"
                                           :flash="(int)$ascend->checks === 2"
                                           :color="$ascend->climb->hold_color"
+                                          :secondary-color="$ascend->climb->hold_color_secondary"
                                           :description="$ascend->climb->wall_name"
                                           :isRepeat="$ascend->is_repeat ?? false"
                                 />
