@@ -15,8 +15,9 @@
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.10",
+        "php-http/client-common": "^2.6",
         "php-http/curl-client": "^2.2",
-        "rubenvanerk/toplogger-php-sdk": "dev-main"
+        "rubenvanerk/toplogger-php-sdk": "dev-main#d805511"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.6",
@@ -68,7 +69,8 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         }
     },
     "minimum-stability": "dev",
@@ -76,7 +78,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/rubenvanerk/toplogger-php-sdk.git"
+            "url": "https://github.com/rubenvanerk/toplogger-php-sdk-v1.git"
         }
     ]
 }

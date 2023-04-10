@@ -27,6 +27,7 @@
                             @foreach($ascends as $ascend)
                                 <x-ascend :grade="$ascend->climb->grade_font"
                                           :flash="(int)$ascend->checks === 2"
+                                          :onsight="(int)$ascend->checks ===3"
                                           :color="$ascend->climb->hold_color"
                                           :secondary-color="$ascend->climb->hold_color_secondary"
                                           :description="$ascend->climb->wall_name"

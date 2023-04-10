@@ -1,4 +1,4 @@
-@props(['grade', 'flash', 'color', 'secondaryColor' => null, 'description' => '', 'isRepeat' => false])
+@props(['grade', 'flash', 'color', 'secondaryColor' => null, 'description' => '', 'isRepeat' => false, 'onsight' => false])
 
 <li {{ $attributes->class('relative col-span-1 flex shadow-sm rounded-md') }}>
     <div class="flex-shrink-0 flex items-center justify-center w-10 text-white text-sm font-bold rounded-l-md text-shadow"
@@ -15,6 +15,8 @@
             <x-icons.lightning-bolt class="mr-1 w-4 h-4 text-amber-500"/>
         @elseif($isRepeat)
             <x-icons.refresh class="mr-1 w-4 h-4 text-gray-500"/>
+        @elseif($onsight)
+            <img src="{{ asset('img/ondra.png') }}" class="mr-1 w-6 h-6" alt="Ondra">
         @endif
     </div>
 </li>
