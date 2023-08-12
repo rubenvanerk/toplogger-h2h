@@ -133,8 +133,8 @@ class Dashboard extends Component
             $this->climberStats[$name] = [
                 'sessionCount' => $sessionCount,
                 'tops' => $ascends->count(),
-                'grade_font' => $this->gradeConverterService->toFont($stats->grade),
-                'grade_progress' => $this->gradeConverterService->getProgress((float) $stats->grade),
+                'grade_font' => $stats->grade ? $this->gradeConverterService->toFont($stats->grade) : ':(',
+                'grade_progress' => $stats->grade ? $this->gradeConverterService->getProgress((float) $stats->grade) : ':(',
                 'top_ten_60d' => $stats->top_ten,
                 'top_ten_all' => $topTenAll,
             ];
