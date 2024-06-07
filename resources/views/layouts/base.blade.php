@@ -25,6 +25,8 @@
 
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <script src="https://cdn.usefathom.com/script.js" data-site="JVFJJHDP" defer></script>
     </head>
 
     <body class="h-full">
