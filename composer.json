@@ -17,7 +17,8 @@
         "livewire/livewire": "^2.10",
         "php-http/client-common": "^2.6",
         "php-http/curl-client": "^2.2",
-        "rubenvanerk/toplogger-php-sdk": "dev-main#d805511"
+        "rubenvanerk/toplogger-php-sdk": "dev-main#d805511",
+        "sentry/sentry-laravel": "^4.5"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.6",
@@ -26,7 +27,7 @@
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
-        "nunomaduro/larastan": "^2.2",
+        "larastan/larastan": "^2.2",
         "pestphp/pest": "^1.21",
         "pestphp/pest-plugin-laravel": "^1.2",
         "phpunit/phpunit": "^9.5.10",
