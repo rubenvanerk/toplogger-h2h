@@ -57,8 +57,8 @@
                                     @foreach($gyms as $gym)
                                     {
                                         data: @json($gym->chart_data),
-                                        backgroundColor: '{{ $colors[$loop->index] }}',
-                                        borderColor: '{{ $colors[$loop->index] }}',
+                                        backgroundColor: '{{ $colors[$loop->index] ?? '#ffffff' }}',
+                                        borderColor: '{{ $colors[$loop->index] ?? '#ffffff' }}',
                                         label: '{{ $gym->name }}',
                                     }, @endforeach
                                 ],
